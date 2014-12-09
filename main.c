@@ -1,11 +1,3 @@
-//
-//  lzwdekoder.c
-//  TINF labos
-//
-//  Created by Dora Budić on 05/12/14.
-//  Copyright (c) 2014 Dora Budić. All rights reserved.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,24 +7,29 @@
 
 unsigned short int counter = 0;
 
+
 struct node{
     unsigned short int index;
     struct node *next;
 };
+
 
 struct trie_node{
 	char value;
 	struct trie_node *link[ALPH_SIZE];
 };
 
+
 struct leave{
     char letters[ALPH_SIZE];
     struct trie_node *pointer;
 };
 
+
 struct dict{
     struct leave *words[DICT_SIZE];
 };
+
 
 struct node *root;
 struct dict *start;
@@ -46,6 +43,7 @@ struct leave *create_leave()
     memset(q->letters, 0, sizeof(q->letters));
     return q;
 }
+
 
 struct trie_node *create_trie_node() {
     struct trie_node *q = (struct trie_node*) malloc( sizeof(struct trie_node) );
@@ -91,9 +89,7 @@ void get_input()
         walker->index = (unsigned short) atoi(creater);
         walker->next = NULL;
    	}
-    
     fclose(f);
-    
 }
 
 
@@ -111,22 +107,31 @@ void start_dictionary()
 {
     create_dict();
     trie_root = create_trie_node();
-    //char bla[6] = {'r', 'a', 'b', 'o', 'w'};
-    //for (int i=0; i<5; i++) {
    
-    for (int i=32; i<127; i++) {
+    for (int i=0; i<127; i++) {
         struct trie_node *t = create_trie_node();
 		t->value = (char) i;
-        //t->value = bla[i];
         trie_root->link[counter] = t;
         counter++;
         start->words[i]->letters[0] = (char) i;
-        //start->words[i]->letters[0] = bla[i];
         start->words[i]->pointer = t;
-        
     }
-    
+}
 
+
+void add_new_word(char first[ALPH_SIZE], char second[2], struct trie_node *monkey)
+{
+    strcat(first, second);
+    strcat(start->words[counter]->letters, first);
+    for (int i=0; i<ALPH_SIZE;i++){
+        if (monkey->link[i] == NULL) {
+            monkey->link[i] = create_trie_node();
+            monkey->link[i]->value = second[0];
+            start->words[counter]->pointer = monkey->link[i];
+            break;
+        }
+    }
+    counter++;
 }
 
 
@@ -151,33 +156,12 @@ void decode()
             walker = walker->next;
             if (start->words[walker->index]->letters[0] != '\0') {
                 second[0] = start->words[walker->index]->letters[0];
-                strcat(first, second);
-                strcat(start->words[counter]->letters, first);
-                for (int i=0; i<ALPH_SIZE;i++){
-                    if (monkey->link[i] == NULL) {
-                        monkey->link[i] = create_trie_node();
-                        monkey->link[i]->value = second[0];
-                        start->words[counter]->pointer = monkey->link[i];
-                        break;
-                    }
-                }
-                counter++;
+                add_new_word(first, second, monkey);
             }
             else {
                 second[0] = first[0];
-                strcat(first, second);
-                strcat(start->words[counter]->letters, first);
-                for (int i=0; i<ALPH_SIZE;i++){
-                    if (monkey->link[i] == NULL) {
-                        monkey->link[i] = create_trie_node();
-                        monkey->link[i]->value = second[0];
-                        start->words[counter]->pointer = monkey->link[i];
-                        break;
-                    }
-                }
-                counter++;
+                add_new_word(first, second, monkey);
             }
-            
         }
     }
     printf("%s", start->words[walker->index]->letters);
@@ -191,7 +175,6 @@ int main(int argc, const char * argv[])
     root->next = NULL;
     
     decode();
-    
     
     return 0;
 }
