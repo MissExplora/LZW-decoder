@@ -21,7 +21,6 @@ struct node{
 };
 
 struct trie_node{
-    unsigned short int index;
 	char value;
 	struct trie_node *link[ALPH_SIZE];
 };
@@ -52,7 +51,7 @@ struct trie_node *create_trie_node() {
     struct trie_node *q = (struct trie_node*) malloc( sizeof(struct trie_node) );
     for(int x=0 ; x < ALPH_SIZE ; x++)
         q->link[x] = NULL;
-    q->value = '\0';
+        q->value = '\0';
     return q;
 }
 
@@ -79,7 +78,6 @@ void get_input()
                 new = (struct node *) malloc( sizeof(struct node) );
                 new->next = NULL;
                 walker->index = (unsigned short) atoi(creater);
-                //printf("%hu ", walker->index);
                 walker->next = new;
                 walker = walker->next;
                 memset(creater, 0, sizeof(creater));
@@ -92,7 +90,6 @@ void get_input()
         }
         walker->index = (unsigned short) atoi(creater);
         walker->next = NULL;
-        printf("%hu ", walker->index);
    	}
     
     fclose(f);
@@ -104,7 +101,8 @@ void create_dict()
 {
     start = (struct dict*) malloc( sizeof(struct dict) );
     for (int x=0; x < DICT_SIZE ; x++) {
-        memset(start->words[x]->letters, 0, sizeof(start->words[x]->letters));
+        struct leave *l = create_leave();
+        start->words[x] = l;
     }
 }
 
@@ -113,17 +111,22 @@ void start_dictionary()
 {
     create_dict();
     trie_root = create_trie_node();
+    //char bla[6] = {'r', 'a', 'b', 'o', 'w'};
+    //for (int i=0; i<5; i++) {
+   
     for (int i=32; i<127; i++) {
-        struct leave *l = create_leave();
         struct trie_node *t = create_trie_node();
 		t->value = (char) i;
+        //t->value = bla[i];
         trie_root->link[counter] = t;
         counter++;
-        l->letters[0] = (char) i;
-        l->pointer = t;
-        start->words[i] = l;
+        start->words[i]->letters[0] = (char) i;
+        //start->words[i]->letters[0] = bla[i];
+        start->words[i]->pointer = t;
         
     }
+    
+
 }
 
 
@@ -159,13 +162,25 @@ void decode()
                     }
                 }
                 counter++;
-                
-                
-                
+            }
+            else {
+                second[0] = first[0];
+                strcat(first, second);
+                strcat(start->words[counter]->letters, first);
+                for (int i=0; i<ALPH_SIZE;i++){
+                    if (monkey->link[i] == NULL) {
+                        monkey->link[i] = create_trie_node();
+                        monkey->link[i]->value = second[0];
+                        start->words[counter]->pointer = monkey->link[i];
+                        break;
+                    }
+                }
+                counter++;
             }
             
         }
     }
+    printf("%s", start->words[walker->index]->letters);
 }
 
 
@@ -175,7 +190,7 @@ int main(int argc, const char * argv[])
     root = (struct node *) malloc( sizeof(struct node) );
     root->next = NULL;
     
-    //get_input();
+    decode();
     
     
     return 0;
