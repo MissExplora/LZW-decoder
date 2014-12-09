@@ -4,7 +4,7 @@
 #define ALPH_SIZE 256
 #define DICT_SIZE 65536
 
-
+FILE *writer;
 unsigned short int counter = 0;
 
 
@@ -54,7 +54,7 @@ struct trie_node *create_trie_node() {
 }
 
 
-void get_input()
+void get_input(const char * argv[])
 {
     struct node *walker, *new;
     walker = root;
@@ -63,7 +63,7 @@ void get_input()
     char creater[DICT_SIZE] = {};
     
     FILE *f;
-	f = fopen("/Users/Dora/Desktop/TINF labos/ulazna2", "r");
+	f = fopen(argv[1], "r");
 	
 	if( f == NULL ) {
     	perror("Error while opening the file.\n");
@@ -90,6 +90,14 @@ void get_input()
         walker->next = NULL;
    	}
     fclose(f);
+}
+
+
+void write_to_file(char letters[ALPH_SIZE])
+{
+    for (int i=0; i<ALPH_SIZE && letters[i]!='\0'; i++) {
+        fputc(letters[i], writer);
+    }
 }
 
 
@@ -138,7 +146,7 @@ void add_new_word(char first[ALPH_SIZE], char second[2], struct trie_node *monke
 void decode()
 {
     start_dictionary();
-    get_input();
+    //get_input();
     
     struct node *walker;
     struct trie_node *monkey;
@@ -150,7 +158,7 @@ void decode()
         monkey = trie_root;
         
         if (start->words[walker->index]->letters[0] != '\0') {
-            printf("%s", start->words[walker->index]->letters);
+            write_to_file(start->words[walker->index]->letters);
             strcat(first, start->words[walker->index]->letters);
             monkey = start->words[walker->index]->pointer;
             walker = walker->next;
@@ -164,7 +172,7 @@ void decode()
             }
         }
     }
-    printf("%s", start->words[walker->index]->letters);
+    write_to_file(start->words[walker->index]->letters);
 }
 
 
@@ -173,8 +181,12 @@ int main(int argc, const char * argv[])
 {
     root = (struct node *) malloc( sizeof(struct node) );
     root->next = NULL;
+    get_input(argv);
+    writer = fopen(argv[2], "a");
     
     decode();
+    
+    fclose(writer);
     
     return 0;
 }
