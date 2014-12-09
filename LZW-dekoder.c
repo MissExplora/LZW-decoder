@@ -49,7 +49,7 @@ struct trie_node *create_trie_node() {
     struct trie_node *q = (struct trie_node*) malloc( sizeof(struct trie_node) );
     for(int x=0 ; x < ALPH_SIZE ; x++)
         q->link[x] = NULL;
-        q->value = '\0';
+    q->value = '\0';
     return q;
 }
 
@@ -107,8 +107,8 @@ void start_dictionary()
 {
     create_dict();
     trie_root = create_trie_node();
-   
-    for (int i=0; i<127; i++) {
+    
+    for (int i=0; i<ALPH_SIZE; i++) {
         struct trie_node *t = create_trie_node();
 		t->value = (char) i;
         trie_root->link[counter] = t;
