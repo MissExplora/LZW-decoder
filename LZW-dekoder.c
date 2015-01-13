@@ -59,34 +59,24 @@ void get_input(const char * argv[])
     struct node *walker, *new;
     walker = root;
     
-    char character;
-    char creater[DICT_SIZE] = {};
+    unsigned short buffer;
     
     FILE *f;
-	f = fopen(argv[1], "r");
+	f = fopen(argv[1], "rb");
 	
 	if( f == NULL ) {
     	perror("Error while opening the file.\n");
      	exit(EXIT_FAILURE);
    	}
    	else {
-        int i = 0;
-   		while ((character = fgetc(f)) != EOF && i < DICT_SIZE) {
-            if (character == ' ') {
-                new = (struct node *) malloc( sizeof(struct node) );
-                new->next = NULL;
-                walker->index = (unsigned short) atoi(creater);
-                walker->next = new;
-                walker = walker->next;
-                memset(creater, 0, sizeof(creater));
-                i = 0;
-            }
-            else {
-                creater[i] = character;
-                i++;
-            }
+   		while (fread(&buffer, sizeof(buffer), 1, f) != NULL) {
+            new = (struct node *) malloc( sizeof(struct node) );
+            new->next = NULL;
+            walker->index = buffer;
+            walker->next = new;
+            walker = walker->next;
         }
-        walker->index = (unsigned short) atoi(creater);
+        walker->index = NULL;
         walker->next = NULL;
    	}
     fclose(f);
