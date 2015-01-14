@@ -16,12 +16,12 @@ struct node{
 
 struct trie_node{
 	char value;
-	struct trie_node *link[ALPH_SIZE];
+	struct trie_node *link[DICT_SIZE];
 };
 
 
 struct leave{
-    char letters[ALPH_SIZE];
+    char letters[DICT_SIZE];
     struct trie_node *pointer;
 };
 
@@ -47,7 +47,7 @@ struct leave *create_leave()
 
 struct trie_node *create_trie_node() {
     struct trie_node *q = (struct trie_node*) malloc( sizeof(struct trie_node) );
-    for(int x=0 ; x < ALPH_SIZE ; x++)
+    for(int x=0 ; x < DICT_SIZE ; x++)
         q->link[x] = NULL;
     q->value = '\0';
     return q;
@@ -83,9 +83,9 @@ void get_input(const char * argv[])
 }
 
 
-void write_to_file(char letters[ALPH_SIZE])
+void write_to_file(char letters[DICT_SIZE])
 {
-    for (int i=0; i<ALPH_SIZE && letters[i]!='\0'; i++) {
+    for (int i=0; i<DICT_SIZE && letters[i]!='\0'; i++) {
         fputc(letters[i], writer);
     }
 }
@@ -117,11 +117,11 @@ void start_dictionary()
 }
 
 
-void add_new_word(char first[ALPH_SIZE], char second[2], struct trie_node *monkey)
+void add_new_word(char first[DICT_SIZE], char second[2], struct trie_node *monkey)
 {
     strcat(first, second);
     strcat(start->words[counter]->letters, first);
-    for (int i=0; i<ALPH_SIZE;i++){
+    for (int i=0; i<DICT_SIZE;i++){
         if (monkey->link[i] == NULL) {
             monkey->link[i] = create_trie_node();
             monkey->link[i]->value = second[0];
@@ -143,7 +143,7 @@ void decode()
     walker = root;
     
     while(walker->next != NULL) {
-        char first[ALPH_SIZE] = {};
+        char first[DICT_SIZE] = {};
         char second[2] = {};
         monkey = trie_root;
         
@@ -152,13 +152,15 @@ void decode()
             strcat(first, start->words[walker->index]->letters);
             monkey = start->words[walker->index]->pointer;
             walker = walker->next;
-            if (start->words[walker->index]->letters[0] != '\0') {
-                second[0] = start->words[walker->index]->letters[0];
-                add_new_word(first, second, monkey);
-            }
-            else {
-                second[0] = first[0];
-                add_new_word(first, second, monkey);
+            if (counter < (DICT_SIZE-1)) {
+                if (start->words[walker->index]->letters[0] != '\0') {
+                    second[0] = start->words[walker->index]->letters[0];
+                    add_new_word(first, second, monkey);
+                }
+                else {
+                    second[0] = first[0];
+                    add_new_word(first, second, monkey);
+                }
             }
         }
     }
