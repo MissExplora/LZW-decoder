@@ -143,16 +143,21 @@ void decode()
     walker = root;
     
     while(walker->next != NULL) {
-        char first[DICT_SIZE] = {};
-        char second[2] = {};
-        monkey = trie_root;
-        
-        if (start->words[walker->index]->letters[0] != '\0') {
+        if (counter >= (DICT_SIZE-1)) {
             write_to_file(start->words[walker->index]->letters);
-            strcat(first, start->words[walker->index]->letters);
-            monkey = start->words[walker->index]->pointer;
             walker = walker->next;
-            if (counter < (DICT_SIZE-1)) {
+        }
+        else {
+            char first[DICT_SIZE] = {};
+            char second[2] = {};
+            monkey = trie_root;
+        
+            if (start->words[walker->index]->letters[0] != '\0') { 
+                write_to_file(start->words[walker->index]->letters);
+                strcat(first, start->words[walker->index]->letters); 
+                monkey = start->words[walker->index]->pointer;
+                walker = walker->next;
+            
                 if (start->words[walker->index]->letters[0] != '\0') {
                     second[0] = start->words[walker->index]->letters[0];
                     add_new_word(first, second, monkey);
@@ -161,10 +166,11 @@ void decode()
                     second[0] = first[0];
                     add_new_word(first, second, monkey);
                 }
+            
             }
         }
+    //write_to_file(start->words[walker->index]->letters);
     }
-    write_to_file(start->words[walker->index]->letters);
 }
 
 
