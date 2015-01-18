@@ -16,7 +16,7 @@ struct node{
 
 struct trie_node{
 	char value;
-	struct trie_node *link[DICT_SIZE];
+	struct trie_node *link[ALPH_SIZE];
 };
 
 
@@ -47,7 +47,7 @@ struct leave *create_leave()
 
 struct trie_node *create_trie_node() {
     struct trie_node *q = (struct trie_node*) malloc( sizeof(struct trie_node) );
-    for(int x=0 ; x < DICT_SIZE ; x++)
+    for(int x=0 ; x < ALPH_SIZE ; x++)
         q->link[x] = NULL;
     q->value = '\0';
     return q;
